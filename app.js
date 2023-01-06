@@ -20,6 +20,6 @@ app.get("*",function(req,res){
     res.sendFile(path.join(__dirname,'./client/build/index.html'))
 })
 
-app.listen(process.env.PORT,()=>{
+app.listen(process.env.PORT || 9002,()=>{
     console.log(`Be Started at port ${process.env.PORT}`)
  })
