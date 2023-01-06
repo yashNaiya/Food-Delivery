@@ -22,7 +22,7 @@ const Home = () => {
 
       const data = await res.json()
       setrootUser(data.rootUser)
-      console.log(data)
+      // console.log(data)
 
       if(!res.status === 200){
         throw new Error(res.error)
