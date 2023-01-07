@@ -21,7 +21,9 @@ const Login = () => {
             [e.target.name]: [e.target.value]
         }))
     }
-
+    axios.get("/login").then(res=>{
+        alert(res.data)
+    })
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { email, password } = inputs

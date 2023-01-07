@@ -62,7 +62,9 @@ router.post("/register", (req,res)=>{
     // res.send('my register api')
 })
 
-
+router.get("/login",(req,res)=>{
+    res.send("hii login get method")
+})
 router.get("/home", Authenticate ,async (req,res)=>{
     res.send({rootUser:req.rootUser,message:"on home page"})
 })
