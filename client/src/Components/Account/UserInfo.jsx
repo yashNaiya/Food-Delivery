@@ -11,7 +11,7 @@ const UserInfo = (props) => {
             <Typography fontSize={'large'} fontWeight={'bold'}>Yash Naiya</Typography>
             <Button>edit</Button>
         </Box>
-        <Typography>email</Typography>
+        <Typography>{props.rootUser.email}</Typography>
         <Typography>9081819007</Typography>
         <Button fullWidth variant='contained'>Sign out</Button>
     </Box>
