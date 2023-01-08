@@ -5,21 +5,21 @@ const path = require('path')
 require("./Connection/connection")
 const dotenv = require('dotenv')
 const PORT = process.env.PORT || 9002
-dotenv.config({path:"././config.env"})
+dotenv.config({ path: "././config.env" })
 
-const User = require("./Models/Users") 
+const User = require("./Models/Users")
 app.use(cookieParser())
 app.use(express.json())
 
 
 app.use(require('./router/auth'))
 
-app.use(express.static(path.join(__dirname,'./client/build')))
 
-app.get("*",function(req,res){
-    res.sendFile(path.join(__dirname,'./client/build/index.html'))
+app.get("/", function (req, res) {
+    app.use(express.static(path.resolve(__dirname, './client/build')))
+    res.sendFile(path.resolve(__dirname, './client/build/index.html'))
 })
 
-app.listen(PORT,'0.0.0.0',()=>{
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Be Started at port ${process.env.PORT}`)
- })
+})
