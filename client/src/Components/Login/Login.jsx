@@ -22,7 +22,7 @@ const Login = () => {
         }))
     }
     axios.get("/login").then(res=>{
-        alert(res.data)
+        // alert(res.data)
     })
     const handleSubmit = async (e) => {
         e.preventDefault();

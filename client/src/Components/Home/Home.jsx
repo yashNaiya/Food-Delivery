@@ -4,7 +4,7 @@ import Navbar from '../Navbar'
 import Menu from './Menu'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios'
 const Home = () => {
 
   const [rootUser, setrootUser] = useState()
@@ -34,7 +34,13 @@ const Home = () => {
     }
   }
   useEffect(() => {
-    callHomePage();
+    // callHomePage();
+    axios('/home')
+            .then(res => setrootUser(res.rootUser))
+            .catch(err => {
+              console.log(err)
+              navigate("/login")
+            })
   }, [])
   
   return (
