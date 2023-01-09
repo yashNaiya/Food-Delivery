@@ -43,7 +43,7 @@ router.post("/login",(req,res)=>{
                res.cookie("jwtoken",token,{
                 expires:new Date(Date.now() + 864000000),
                 httpOnly:true
-               }).send({message:"LogIn Sucessful"}) 
+               }).send({message:token}) 
           }
           else{
            //  console.log("Password Did Not Match")
