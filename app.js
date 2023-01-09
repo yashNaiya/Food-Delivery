@@ -9,7 +9,7 @@ dotenv.config({ path: "././config.env" })
 
 var cors = require('cors')
 app.use(cors({Credential:true,
-              origin:'https://strong-pavlova-dad727.netlify.app/',
+              origin:'*',
               methods:"GET,HEAD,PUT,PATCH,POST,DELETE",
               preflightContinue:false}));
 
