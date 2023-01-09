@@ -8,7 +8,10 @@ const PORT = process.env.PORT || 9002
 dotenv.config({ path: "././config.env" })
 
 var cors = require('cors')
-app.use(cors({Credential:true,origin:'*'}));
+app.use(cors({Credential:true,
+              origin:'*',
+              methods:"GET,HEAD,PUT,PATCH,POST,DELETE",
+              preflightContinue:false}));
 const { createProxyMiddleware } = require('http-proxy-middleware');
 app.use('https://yash-restaurant-backend.onrender.com', createProxyMiddleware({ 
     target: 'http://localhost:8080/', //original url
