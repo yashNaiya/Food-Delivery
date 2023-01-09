@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/static/js/main.c65d82dc.js",
+    "main.js": "/static/js/main.4120f5e5.js",
     "static/media/landing.jpg": "/static/media/landing.1c391f5c5a5e7de4f04b.jpg",
     "static/media/pizza.jpg": "/static/media/pizza.02846678326e3d062279.jpg",
     "static/media/burger.jpg": "/static/media/burger.8598148452dfdb988fc0.jpg",
     "index.html": "/index.html",
-    "main.c65d82dc.js.map": "/static/js/main.c65d82dc.js.map"
+    "main.4120f5e5.js.map": "/static/js/main.4120f5e5.js.map"
   },
   "entrypoints": [
-    "static/js/main.c65d82dc.js"
+    "static/js/main.4120f5e5.js"
   ]
 }

@@ -6,8 +6,9 @@ import axios from "axios"
 import { NavLink, useNavigate } from 'react-router-dom';
 
 const Login = () => {
+    // const url = `${BASE_URL}/login`
     const navigate = useNavigate()
-
+    // console.log(url)
     const [inputs, setinputs] = useState({
         email: "",
         password: "",
@@ -25,7 +26,7 @@ const Login = () => {
         e.preventDefault();
         const { email, password } = inputs
         if (email && password) {
-            axios.post(`${process.env.BASE_URL}/login`, inputs)
+            axios.post("https://yash-restaurant-backend.onrender.com/login", inputs)
                 .then(res => {
                     // alert(res.data.message)
                     // console.log(res.data)
