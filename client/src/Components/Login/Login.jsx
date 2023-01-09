@@ -21,17 +21,14 @@ const Login = () => {
             [e.target.name]: [e.target.value]
         }))
     }
-    axios.get("/login").then(res=>{
-        // alert(res.data)
-    })
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { email, password } = inputs
         if (email && password) {
-            axios.post("/login", inputs)
+            axios.post(`${process.env.BASE_URL}/login`, inputs)
                 .then(res => {
-                    alert(res.data.message)
-                    console.log(res.data)
+                    // alert(res.data.message)
+                    // console.log(res.data)
                     if (res.status === 200) {
                         navigate('/home')
                     }

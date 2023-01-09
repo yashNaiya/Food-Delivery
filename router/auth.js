@@ -5,6 +5,33 @@ const Authenticate = require("../Middleware/Authenticate")
 const router = express.Router()
 const cookieParser = require('cookie-parser')
 router.use(cookieParser())
+
+router.post("/edit", async(req,res)=>{
+    try{
+    const _id= req.body._id
+    const name = req.body.name.toString()
+    const number = req.body.number.toString()
+    const email = req.body.email.toString()
+
+    const Updateprofile = await User.findByIdAndUpdate({_id:_id},{$set:{name:name,number:number,email:email}})
+
+    if(!Updateprofile){
+        return res.status(404).send({message:"Profile Is not Updated"}); }
+    else{
+        res.send({message:"Profile Is Updated"}); }
+    }
+    catch(e){
+        res.send({message:"Error"})
+    }
+})
+router.post('/removeCookie',(req,res)=>{
+    try{
+        res.clearCookie('jwtoken').send("cookie is cleared")
+        
+    }catch(e){
+        console.log(e.message)
+    }
+})
 router.post("/login",(req,res)=>{
     const {email,password} = req.body
    //  console.log(req.body)
@@ -13,7 +40,6 @@ router.post("/login",(req,res)=>{
         const isMatch = await bcrypt.compare(password[0], user.password)
           if(isMatch){
                 token = await user.generateAuthToken();
-
                res.cookie("jwtoken",token,{
                 expires:new Date(Date.now() + 864000000),
                 httpOnly:true

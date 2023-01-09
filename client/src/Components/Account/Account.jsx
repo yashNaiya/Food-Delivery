@@ -52,9 +52,7 @@ const Account = () => {
                         <Typography m={'auto'} textAlign={'center'} variant={'h5'}>Account</Typography>
                     </Box>
                     <Box marginTop={'2rem'} width={'100%'} display={'flex'} flexDirection={'row'} justifyContent={'space-around'}>
-                        {/* <Typography>{rootUser}</Typography> */}
-                        {console.log(rootUser)}
-                        <UserInfo rootUser={rootUser} />
+                        <UserInfo rootUser={rootUser} setrootUser={setrootUser} />
                         <OrderHistory />
                     </Box>
                 </Box>

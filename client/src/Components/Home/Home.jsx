@@ -9,32 +9,8 @@ const Home = () => {
 
   const [rootUser, setrootUser] = useState()
   const navigate = useNavigate()
-  const callHomePage = async ()=>{
-    try{
-      const res = await fetch('/home',{
-        method:"GET",
-        headers:{
-          Accept:"application/json",
-          "Content-Type":"application/json"
-        },
-        credentials:"include"
-      });
-
-      const data = await res.json()
-      setrootUser(data.rootUser)
-      // console.log(data)
-
-      if(!res.status === 200){
-        throw new Error(res.error)
-      }
-
-    }catch(err){
-      console.log(err)
-      navigate("/login")
-    }
-  }
+ 
   useEffect(() => {
-    // callHomePage();
     axios('/home')
             .then(res => setrootUser(res.rootUser))
             .catch(err => {
