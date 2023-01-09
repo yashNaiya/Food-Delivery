@@ -12,15 +12,15 @@ app.use(cors({Credential:true,
               origin:'*',
               methods:"GET,HEAD,PUT,PATCH,POST,DELETE",
               preflightContinue:false}));
-const { createProxyMiddleware } = require('http-proxy-middleware');
-app.use('https://yash-restaurant-backend.onrender.com', createProxyMiddleware({ 
-    target: 'http://localhost:8080/', //original url
-    changeOrigin: true, 
-    //secure: false,
-    onProxyRes: function (proxyRes, req, res) {
-       proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-    }
-}));
+
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+  });
 
 const User = require("./Models/Users")
 app.use(cookieParser())
