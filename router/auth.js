@@ -42,7 +42,9 @@ router.post("/login",(req,res)=>{
                 token = await user.generateAuthToken();
                res.cookie("jwtoken",token,{
                 expires:new Date(Date.now() + 864000000),
-                httpOnly:true
+                httpOnly:true,
+                secure:true,
+                sameSite:'none'
                }).send({message:token}) 
           }
           else{
