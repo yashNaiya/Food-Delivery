@@ -40,10 +40,14 @@ router.post("/login",(req,res)=>{
         const isMatch = await bcrypt.compare(password[0], user.password)
           if(isMatch){
                 token = await user.generateAuthToken();
+                res.setHeader('Access-Control-Allow-Credentials','true')
+                res.setHeader('')
                res.cookie("jwtoken",token,{
                 expires:new Date(Date.now() + 864000000),
-                httpOnly:true
-               }).send({message:"LogIn Sucessful"}) 
+                httpOnly:true,
+                secure:true,
+                sameSite:'none',
+               }).send({message:token}) 
           }
           else{
            //  console.log("Password Did Not Match")

@@ -8,8 +8,9 @@ const PORT = process.env.PORT || 9002
 dotenv.config({ path: "././config.env" })
 
 var cors = require('cors')
-app.use(cors());
+app.use(cors({Credential:true,origin:'*'}));
 const { createProxyMiddleware } = require('http-proxy-middleware');
+
 app.use('https://yash-restaurant-backend.onrender.com', createProxyMiddleware({ 
     target: 'http://localhost:8080/', //original url
     changeOrigin: true, 
@@ -18,6 +19,26 @@ app.use('https://yash-restaurant-backend.onrender.com', createProxyMiddleware({
        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
     }
 }));
+
+// Add headers before the routes are defined
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'https://strong-pavlova-dad727.netlify.app/');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
 
 const User = require("./Models/Users")
 app.use(cookieParser())
