@@ -7,11 +7,7 @@ const dotenv = require('dotenv')
 const PORT = process.env.PORT || 9002
 dotenv.config({ path: "././config.env" })
 
-// var cors = require('cors')
-// app.use(cors({Credential:true,
-//               origin:'*',
-//               methods:"GET,HEAD,PUT,PATCH,POST,DELETE",
-//               preflightContinue:false}));
+
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
