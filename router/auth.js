@@ -46,7 +46,7 @@ router.post("/login",(req,res)=>{
                 expires:new Date(Date.now() + 864000000),
                 httpOnly:true,
                 secure:true,
-                sameSite:'none',
+                sameSite:'none'
                }).send({message:token}) 
           }
           else{
