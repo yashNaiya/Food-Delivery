@@ -9,6 +9,7 @@ dotenv.config({ path: "././config.env" })
 
 var cors = require('cors')
 app.use(cors({
+    
     Credential: true,
     origin: "https://food-delivery-production-574c.up.railway.app/",
     methods: ["GET" , "POST"],
