@@ -40,7 +40,8 @@ router.post("/login",(req,res)=>{
         const isMatch = await bcrypt.compare(password[0], user.password)
           if(isMatch){
                 token = await user.generateAuthToken();
-               res.cookie("jwtoken",token,{
+                res.header('Access-Control-Allow-Credentials', true)
+                res.cookie("jwtoken",token,{
                 expires:new Date(Date.now() + 864000000),
                 httpOnly:true,
                 secure:true,
