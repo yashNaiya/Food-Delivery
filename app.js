@@ -9,12 +9,12 @@ dotenv.config({ path: "././config.env" })
 
 var cors = require('cors')
 
-app.use(cors({
-    Credential: true,
-    origin: "https://strong-pavlova-dad727.netlify.app" ||"https://strong-pavlova-dad727.netlify.app/home",
-    methods: ["GET", "POST"],
-    preflightContinue: true,
-}));
+// app.use(cors({
+//     Credential: true,
+//     origin: "https://strong-pavlova-dad727.netlify.app" ||"https://strong-pavlova-dad727.netlify.app/home",
+//     methods: ["GET", "POST"],
+//     preflightContinue: true,
+// }));
 
 const User = require("./Models/Users")
 app.use(cookieParser())
