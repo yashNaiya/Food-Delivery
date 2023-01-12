@@ -9,12 +9,8 @@ dotenv.config({ path: "././config.env" })
 
 var cors = require('cors')
 app.use(cors({
-
     Credential: true,
-    origin: ["https://food-delivery-production-574c.up.railway.app/",
-        "https://food-delivery-production-574c.up.railway.app",
-        "*",
-        "https://food-delivery-production-574c.up.railway.app/login"],
+    origin:"*",
     methods: ["GET", "POST"],
     preflightContinue: true
 }));
