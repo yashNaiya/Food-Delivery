@@ -10,7 +10,7 @@ dotenv.config({ path: "././config.env" })
 var cors = require('cors')
 app.use(cors({
     Credential: true,
-    origin:"https://63bee239ae65460ef18247ea--strong-pavlova-dad727.netlify.app/",
+    origin:"https://63bee239ae65460ef18247ea--strong-pavlova-dad727.netlify.app",
     methods: ["GET", "POST"],
     preflightContinue: true
 }));
