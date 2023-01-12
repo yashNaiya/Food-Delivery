@@ -15,8 +15,6 @@ app.use(cors({
     preflightContinue: true,
 }));
 
-
-
 const User = require("./Models/Users")
 app.use(cookieParser())
 app.use(express.json())
