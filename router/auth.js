@@ -1,5 +1,6 @@
 const express = require('express')
 const User = require("../Models/Users")
+const Product = require("../Models/Products")
 const bcrypt = require("bcryptjs")
 const Authenticate = require("../Middleware/Authenticate")
 const router = express.Router()
@@ -47,7 +48,7 @@ router.post("/login",(req,res)=>{
                 httpOnly:true,
                 secure:true,
                 sameSite:'none'
-               }).send({message:token}) 
+               }).send() 
           }
           else{
            //  console.log("Password Did Not Match")
@@ -101,6 +102,45 @@ router.get("/home", Authenticate ,async (req,res)=>{
 
 router.get("/account", Authenticate ,async (req,res)=>{
     res.send({rootUser:req.rootUser,message:"on account page"})
+})
+
+
+router.post("/setproducts", (req,res)=>{
+    // console.log(req.body)
+
+    const {image, name, price, desc, category, restaurant} = req.body
+
+       Product.findOne({$and:[{name:name},{restaurant:restaurant}]},(err,product)=>{
+       if(product){
+           res.send({message:"Iteam Already Exists in this Restaurant"})
+       }else{
+           const product = new Product({
+               image:image,
+               name:name,
+               price:price,
+               desc:desc,
+               category:category,
+               restaurant:restaurant
+           })
+           product.save(err =>{
+               if(err){
+                     res.send(err)
+               }
+               else{
+                   res.send({message:"Successfully Added"})     
+               }
+           })
+       }
+    
+       })
+    // res.send('my register api')
+})
+
+router.get('/getproducts',async (req,res)=>{
+    try{const items = await Product.find()
+    res.send(items)}catch(err){
+        res.send(err)
+    }
 })
 
 module.exports  =router
