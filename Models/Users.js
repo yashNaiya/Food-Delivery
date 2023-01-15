@@ -32,6 +32,17 @@ const Infouser = new mongoose.Schema({
                 required: true,
             }
         }
+    ],
+    incart: [
+        {
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Products",
+            },
+            count: {
+                type: Number,
+            }
+        }
     ]
 
 })
@@ -41,10 +52,10 @@ const Infouser = new mongoose.Schema({
 Infouser.methods.generateAuthToken = async function () {
     try {
         let tokenLocal = jwt.sign({ _id: this._id }, process.env.SECRET_KEY);
-        this.tokens = this.tokens.concat({token: tokenLocal});
+        this.tokens = this.tokens.concat({ token: tokenLocal });
         await this.save();
         return tokenLocal;
-        
+
     } catch (err) {
         console.log(err)
     }
@@ -54,7 +65,7 @@ Infouser.methods.generateAuthToken = async function () {
 //hash code
 
 Infouser.pre('save', async function (next) {
-    
+
     if (this.isModified('password')) {
         this.password = await bcrypt.hash(this.password, 12);
     }
