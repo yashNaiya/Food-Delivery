@@ -105,6 +105,9 @@ router.get("/home", Authenticate, async (req, res) => {
 router.get("/account", Authenticate, async (req, res) => {
     res.send({ rootUser: req.rootUser, message: "on account page" })
 })
+router.get("/cart", Authenticate, async (req, res) => {
+    res.send({ rootUser: req.rootUser, message: "on cart page" })
+})
 
 
 router.post("/setproducts", (req, res) => {
@@ -137,7 +140,15 @@ router.post("/setproducts", (req, res) => {
     })
     // res.send('my register api')
 })
-
+router.post('/getproduct',async (req,res)=>{
+    try {
+        const item = await Product.findOne({_id:req.body.productId})
+        console.log(item)
+        res.send(item)
+    } catch (err) {
+        res.send(err)
+    }
+})
 router.get('/getproducts', async (req, res) => {
     try {
         const items = await Product.find()
@@ -146,7 +157,23 @@ router.get('/getproducts', async (req, res) => {
         res.send(err)
     }
 })
+router.post('/incart',async(req,res)=>{
+    // console.log(req.body)
+    try{
 
+        const incartArray = await User.findOne({_id:req.body.rootUserId},{incart: 1, _id: 0})
+        if(incartArray===null){
+            console.log("no data")
+            res.send([])
+        }else{
+            // console.log(incartArray.incart)
+            res.status(200).send(incartArray.incart)
+        }
+    }catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
 router.post('/addtocart', async (req, res) => {
     console.log(req.body.count)
     if (!(req.body.count === 0)) {
@@ -181,19 +208,24 @@ router.post('/addtocart', async (req, res) => {
 
 
         }
-        const garbage1 = await User.findOneAndUpdate(
-            { _id: req.body.userId },
-            { $pull: { "incart": { "count": 0 } } },
-            { multi: true }
-        )
+        // const garbage1 = await User.findOneAndUpdate(
+        //     { _id: req.body.userId },
+        //     { $pull: { "incart": { "count": 0 } } },
+        //     { multi: true }
+        // )
 
     }
    else{
-        console.log("hii fucking hell")
-    //    const garbage2 = await User.findOneAndUpdate(
-    //        { _id: req.body.userId},
-    //        { $pull: { "incart": {"productId": req.body.productId } } }
-    //    )
+        console.log("item is removed")
+       const garbage2 = await User.findOneAndUpdate(
+           { _id: req.body.userId},
+           { $pull: { "incart": {"productId": req.body.productId } } }
+       )
+       if(garbage2){
+        res.status(200).send()
+       }else{
+        res.status(404).send()
+       }
    }
 
 })
