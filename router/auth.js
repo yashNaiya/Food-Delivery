@@ -27,9 +27,16 @@ router.post("/edit", async (req, res) => {
         res.send({ message: "Error" })
     }
 })
-router.post('/removeCookie', (req, res) => {
+router.post('/signout', async (req, res) => {
     try {
-        res.clearCookie('jwtoken').send("cookie is cleared")
+        const cartEmptied =await User.updateOne({_id:req.body.rootUserId}, { $set : {"incart": [] }})
+        if(cartEmptied===null){
+            res.status(404).send()
+        }
+        else{
+            console.log(cartEmptied)
+            res.clearCookie('jwtoken').send("logout succesfull")
+        }
 
     } catch (e) {
         console.log(e.message)
