@@ -1,6 +1,8 @@
 const express = require('express')
 const User = require("../Models/Users")
 const Product = require("../Models/Products")
+const Order = require("../Models/Orders")
+var mongoose = require('mongoose');
 const bcrypt = require("bcryptjs")
 const Authenticate = require("../Middleware/Authenticate")
 const router = express.Router()
@@ -29,11 +31,11 @@ router.post("/edit", async (req, res) => {
 })
 router.post('/signout', async (req, res) => {
     try {
-        const cartEmptied =await User.updateOne({_id:req.body.rootUserId}, { $set : {"incart": [] }})
-        if(cartEmptied===null){
+        const cartEmptied = await User.updateOne({ _id: req.body.rootUserId }, { $set: { "incart": [] } })
+        if (cartEmptied === null) {
             res.status(404).send()
         }
-        else{
+        else {
             console.log(cartEmptied)
             res.clearCookie('jwtoken').send("logout succesfull")
         }
@@ -147,9 +149,9 @@ router.post("/setproducts", (req, res) => {
     })
     // res.send('my register api')
 })
-router.post('/getproduct',async (req,res)=>{
+router.post('/getproduct', async (req, res) => {
     try {
-        const item = await Product.findOne({_id:req.body.productId})
+        const item = await Product.findOne({ _id: req.body.productId })
         console.log(item)
         res.send(item)
     } catch (err) {
@@ -164,77 +166,211 @@ router.get('/getproducts', async (req, res) => {
         res.send(err)
     }
 })
-router.post('/incart',async(req,res)=>{
+router.post('/incart', async (req, res) => {
     // console.log(req.body)
-    try{
+    try {
 
-        const incartArray = await User.findOne({_id:req.body.rootUserId},{incart: 1, _id: 0})
-        if(incartArray===null){
+        const incartArray = await User.findOne({ _id: req.body.rootUserId }, { incart: 1, _id: 0 })
+        if (incartArray === null) {
             console.log("no data")
             res.send([])
-        }else{
+        } else {
             // console.log(incartArray.incart)
             res.status(200).send(incartArray.incart)
         }
-    }catch(err){
+    } catch (err) {
         console.log(err)
         res.send(err)
     }
 })
+
+router.post('/gettotal', async (req, res) => {
+
+    let total = 0;
+    let gst = 0;
+    const orderArray = await User.findOne({ _id: req.body.userId }, { incart: 1, _id: 0 })
+    orderArray.incart.forEach(arrayItem => {
+        total = total + arrayItem.total
+    })
+    gst = (total * 5) / 100
+    // console.log("total ", total)
+    // console.log("gst ", gst)
+    res.status(200).send({ total, gst })
+
+})
+
+
 router.post('/addtocart', async (req, res) => {
-    console.log(req.body.count)
+    console.log(req.body.name)
+    let total = 0;
+    let gst = 0;
     if (!(req.body.count === 0)) {
         var item = {
             productId: req.body.productId,
-            count: req.body.count
+            name:req.body.name,
+            count: req.body.count,
+            total: req.body.price * req.body.count
         }
         console.log("we are in working..")
         const itemOrNot = await User.findOne({ _id: req.body.userId, incart: { $elemMatch: { productId: item.productId } } })
         if (itemOrNot === null) {
-            // console.log(req.body)
+
             const addedItemIncart = await User.findOneAndUpdate({ _id: req.body.userId }, { $push: { incart: item } })
             if (!addedItemIncart) {
                 res.status(404).send()
             } else {
-                console.log('item is added')
-                res.status(200).send("item is added to cart")
+                //calculate total and gst and send
+                const orderArray = await User.findOne({ _id: req.body.userId }, { incart: 1, _id: 0 })
+                orderArray.incart.forEach(arrayItem => {
+                    total = total + arrayItem.total
+                })
+                gst = (total * 5) / 100
+                // console.log("total ", total)
+                // console.log("gst ", gst)
+                res.status(200).send({ total, gst })
             }
         }
         else {
-            // console.log(req.body)
             const updatedItem = await User.findOneAndUpdate(
                 { _id: req.body.userId, "incart.productId": item.productId },
-                { $set: { "incart.$.count": item.count } }
+                {
+                    $set: {
+                        "incart.$.count": item.count,
+                        "incart.$.total": item.total
+                    }
+                }
             )
             if (!updatedItem) {
                 res.status(404).send()
             } else {
-                console.log("item is updated")
-                res.status(200).send("item is updated")
+                //calculate total and gst and send
+                const orderArray = await User.findOne({ _id: req.body.userId }, { incart: 1, _id: 0 })
+                orderArray.incart.forEach(arrayItem => {
+                    total = total + arrayItem.total
+                })
+                gst = (total * 5) / 100
+                // console.log("total ", total)
+                // console.log("gst ", gst)
+
+                res.status(200).send({ total, gst })
             }
 
 
         }
-        // const garbage1 = await User.findOneAndUpdate(
-        //     { _id: req.body.userId },
-        //     { $pull: { "incart": { "count": 0 } } },
-        //     { multi: true }
-        // )
 
     }
-   else{
+    else {
         console.log("item is removed")
-       const garbage2 = await User.findOneAndUpdate(
-           { _id: req.body.userId},
-           { $pull: { "incart": {"productId": req.body.productId } } }
-       )
-       if(garbage2){
-        res.status(200).send()
-       }else{
-        res.status(404).send()
-       }
-   }
+        const garbage2 = await User.findOneAndUpdate(
+            { _id: req.body.userId },
+            { $pull: { "incart": { "productId": req.body.productId } } }
+        )
+        if (garbage2) {
+            //calculate total and gst and send
+            const orderArray = await User.findOne({ _id: req.body.userId }, { incart: 1, _id: 0 })
+            orderArray.incart.forEach(arrayItem => {
+                total = total + arrayItem.total
+            })
+            gst = (total * 5) / 100
+            // console.log("total ", total)
+            // console.log("gst ", gst)
+
+            res.status(200).send({ total, gst })
+        } else {
+            res.status(404).send()
+        }
+    }
 
 })
 
+
+
+//place order
+
+router.post('/placeorder', async (req, res) => {
+    console.log(req.body)
+
+    Order.findOne({ userId: req.body.rootUserId }, async (err, user) => {
+
+        if (user) {
+            console.log("User has previously ordered")
+
+            const orderArray = await User.findOne({ _id: req.body.rootUserId }, { incart: 1, _id: 0 })
+            // console.log(orderArray.incart)
+            if (orderArray.incart.length === 0) {
+                res.send({ message: "Order array is empty" })
+            }
+            else {
+                const order = new Order({
+                    userId: req.body.rootUserId,
+                    order: orderArray.incart,
+                    total: req.body.total,
+                    dateTime: req.body.dateTime,
+                    Instructions: req.body.instruct
+                })
+                order.save(async err => {
+                    if (err) {
+                        console.log(err)
+                        console.log("Order not saved")
+                        res.send(err)
+                    }
+                    else {
+                        const cartEmptied = await User.updateOne({ _id: req.body.rootUserId }, { $set: { "incart": [] } })
+                        if (cartEmptied === null) {
+                            res.status(404).send()
+                        }
+                        else {
+                            console.log(cartEmptied)
+                        }
+                        res.send({ message: "Successfully Ordered" })
+                    }
+                })
+            }
+
+        } else {
+            const orderArray = await User.findOne({ _id: req.body.rootUserId }, { incart: 1, _id: 0 })
+            if (orderArray === null) {
+                res.send({ message: "Order array is empty" })
+            }
+            else {
+                const order = new Order({
+                    userId: req.body.rootUserId,
+                    order: orderArray.incart,
+                    total: req.body.total,
+                    dateTime: req.body.dateTime
+                })
+                order.save(err => {
+                    if (err) {
+                        console.log(err)
+                        console.log("Order not saved")
+                        res.send(err)
+                    }
+                    else {
+                        res.send({ message: "Successfully Ordered" })
+                    }
+                })
+            }
+        }
+
+    })
+})
+
+// get order history
+
+
+router.post('/orderhistory', async (req, res) => {
+    const ObjectId = mongoose.Types.ObjectId;
+    console.log(req.body.rootUserId)
+    const pastOrders = await Order.aggregate(
+        [{ $match:{ $and: [ { userId: ObjectId(req.body.rootUserId) },{state:true} ]}}]
+    );
+    const liveOrders = await Order.aggregate(
+        [{ $match:{ $and: [ { userId: ObjectId(req.body.rootUserId) },{state:false} ]}}]
+    );
+    if (pastOrders && liveOrders) {
+        res.status(200).send({pastOrders,liveOrders})
+    } else {
+        console.log("not found")
+    }
+})
 module.exports = router

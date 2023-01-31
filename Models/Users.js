@@ -39,8 +39,17 @@ const Infouser = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Products",
             },
+            name:{
+                type:String,
+                required:true
+            },
             count: {
                 type: Number,
+                required: true
+            },
+            total: {
+                type:Number,
+                required: true
             }
         }
     ]
