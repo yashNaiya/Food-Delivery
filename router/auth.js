@@ -260,6 +260,7 @@ router.post('/addtocart', async (req, res) => {
 
     }
     else {
+        
         console.log("item is removed")
         const garbage2 = await User.findOneAndUpdate(
             { _id: req.body.userId },
