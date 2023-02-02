@@ -158,6 +158,17 @@ router.post('/getproduct', async (req, res) => {
         res.send(err)
     }
 })
+
+router.post('/getusername',async(req,res)=>{
+    // console.log(req.body)
+    try {
+        const user = await User.findOne({ _id: req.body.userId })
+        console.log(user.name)
+        res.send(user.name)
+    } catch (err) {
+        res.send(err)
+    }
+})
 router.get('/getproducts', async (req, res) => {
     try {
         const items = await Product.find()
@@ -207,7 +218,7 @@ router.post('/addtocart', async (req, res) => {
     if (!(req.body.count === 0)) {
         var item = {
             productId: req.body.productId,
-            name:req.body.name,
+            name: req.body.name,
             count: req.body.count,
             total: req.body.price * req.body.count
         }
@@ -260,7 +271,7 @@ router.post('/addtocart', async (req, res) => {
 
     }
     else {
-        
+
         console.log("item is removed")
         const garbage2 = await User.findOneAndUpdate(
             { _id: req.body.userId },
@@ -358,20 +369,45 @@ router.post('/placeorder', async (req, res) => {
 
 // get order history
 
+router.post('/adminorderhistory', async (req,res)=>{
+    const pastOrders = await  Order.aggregate(
+        [{ $match: { state: true } }]
+    )
+    const liveOrders = await  Order.aggregate(
+        [{ $match: { state: false } }]
+    )
+
+    if (pastOrders && liveOrders) {
+        res.status(200).send({ pastOrders, liveOrders })
+    } else {
+        console.log("not found")
+    }
+})
 
 router.post('/orderhistory', async (req, res) => {
     const ObjectId = mongoose.Types.ObjectId;
     console.log(req.body.rootUserId)
     const pastOrders = await Order.aggregate(
-        [{ $match:{ $and: [ { userId: ObjectId(req.body.rootUserId) },{state:true} ]}}]
+        [{ $match: { $and: [{ userId: ObjectId(req.body.rootUserId) }, { state: true }] } }]
     );
     const liveOrders = await Order.aggregate(
-        [{ $match:{ $and: [ { userId: ObjectId(req.body.rootUserId) },{state:false} ]}}]
+        [{ $match: { $and: [{ userId: ObjectId(req.body.rootUserId) }, { state: false }] } }]
     );
     if (pastOrders && liveOrders) {
-        res.status(200).send({pastOrders,liveOrders})
+        res.status(200).send({ pastOrders, liveOrders })
     } else {
         console.log("not found")
     }
+})
+router.post('/changestate', async(req,res)=>{
+    console.log(req.body._id)
+    const updated = await Order.updateOne({_id:req.body._id},{$set:{'state':true}})
+    if (updated === null) {
+        res.status(404).send()
+    }
+    else {
+        console.log(updated)
+    }
+    res.send({ message: "Successfully Delivered" })
 })
 module.exports = router
