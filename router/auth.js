@@ -2,6 +2,8 @@ const express = require('express')
 const User = require("../Models/Users")
 const Product = require("../Models/Products")
 const Order = require("../Models/Orders")
+const Category = require('../Models/Category')
+const Restaurant = require("../Models/Restaurant")
 var mongoose = require('mongoose');
 const bcrypt = require("bcryptjs")
 const Authenticate = require("../Middleware/Authenticate")
@@ -410,4 +412,140 @@ router.post('/changestate', async(req,res)=>{
     }
     res.send({ message: "Successfully Delivered" })
 })
+
+
+//admin item page
+
+router.post('/addcategory',async(req,res)=>{
+    const {name} = req.body
+
+    Category.findOne({name:name},(err,category)=>{
+        if(category){
+            res.send({message:"category already exists"})
+        }
+        else{
+            const category = new Category({
+                name:name
+            })
+
+            category.save(err=>{
+                if(err){
+                    res.send(err)
+                }
+                else{
+                    res.send({message:"category added"})
+                }
+            })
+        }
+    })
+
+})
+router.post('/addrestaurant',async(req,res)=>{
+
+    const {name} = req.body
+
+    Restaurant.findOne({name:name},(err,rest)=>{
+        if(rest){
+            res.send({message:"restaurant already exists"})
+        }
+        else{
+            const restaurant = new Restaurant({
+                name:name
+            })
+
+            restaurant.save(err=>{
+                if(err){
+                    res.send(err)
+                }
+                else{
+                    res.send({message:"restaurant added"})
+                }
+            })
+        }
+    })
+    
+})
+router.post('/addproduct',async(req,res)=>{
+    const { image, name, price, desc, category, restaurant } = req.body
+
+    Product.findOne({ $and: [{ name: name }, { restaurant: restaurant }] }, (err, product) => {
+        if (product) {
+            res.send({ message: "Iteam Already Exists in this Restaurant" })
+        } else {
+            const product = new Product({
+                image: image,
+                name: name,
+                price: price,
+                desc: desc,
+                category: category,
+                restaurant: restaurant
+            })
+            product.save(err => {
+                if (err) {
+                    res.send(err)
+                }
+                else {
+                    res.send({ message: "Successfully Added" })
+                }})
+            }
+        })
+})
+
+
+
+
+router.post('/readcategory',async(req,res)=>{
+    try {
+        const items = await Category.find()
+        res.send(items)
+    } catch (err) {
+        res.send(err)
+    }
+
+})
+router.post('/readrestaurant',async(req,res)=>{
+    try {
+        const items = await Restaurant.find()
+        res.send(items)
+    } catch (err) {
+        res.send(err)
+    }
+    
+})
+router.post('/readproduct',async(req,res)=>{
+    const {category, city} = req.body
+    const products = await  Product.aggregate(
+        [{ $match: {$and:[{category: category},{restaurant:city}]} }]
+    )
+    if(products){
+        res.send(products)
+    }
+})
+
+
+
+
+router.post('/updatecategory',async(req,res)=>{
+
+})
+router.post('/updaterestaurant',async(req,res)=>{
+
+})
+router.post('/updateproduct',async(req,res)=>{
+
+})
+
+
+
+
+router.post('/deletecategory',async(req,res)=>{
+
+})
+router.post('/deleterestaurant',async(req,res)=>{
+
+})
+router.post('/deleteproduct',async(req,res)=>{
+
+})
+
 module.exports = router
