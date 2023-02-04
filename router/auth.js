@@ -8,8 +8,22 @@ var mongoose = require('mongoose');
 const bcrypt = require("bcryptjs")
 const Authenticate = require("../Middleware/Authenticate")
 const router = express.Router()
+const multer = require('multer')
 const cookieParser = require('cookie-parser')
 router.use(cookieParser())
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) { 
+        cb(null, './Uploads/images');    
+     }, 
+     filename: function (req, file, cb) { 
+        cb(null , Date.now()+'_'+file.originalname);   
+     }
+})
+var upload = multer({ storage: storage })
+
+const path = require("path");  
+router.use("/images", express.static(path.join("Uploads/images"))); 
 
 router.post("/edit", async (req, res) => {
     try {
@@ -120,37 +134,6 @@ router.get("/cart", Authenticate, async (req, res) => {
     res.send({ rootUser: req.rootUser, message: "on cart page" })
 })
 
-
-router.post("/setproducts", (req, res) => {
-    // console.log(req.body)
-
-    const { image, name, price, desc, category, restaurant } = req.body
-
-    Product.findOne({ $and: [{ name: name }, { restaurant: restaurant }] }, (err, product) => {
-        if (product) {
-            res.send({ message: "Iteam Already Exists in this Restaurant" })
-        } else {
-            const product = new Product({
-                image: image,
-                name: name,
-                price: price,
-                desc: desc,
-                category: category,
-                restaurant: restaurant
-            })
-            product.save(err => {
-                if (err) {
-                    res.send(err)
-                }
-                else {
-                    res.send({ message: "Successfully Added" })
-                }
-            })
-        }
-
-    })
-    // res.send('my register api')
-})
 router.post('/getproduct', async (req, res) => {
     try {
         const item = await Product.findOne({ _id: req.body.productId })
@@ -465,20 +448,21 @@ router.post('/addrestaurant',async(req,res)=>{
     })
     
 })
-router.post('/addproduct',async(req,res)=>{
-    const { image, name, price, desc, category, restaurant } = req.body
+router.post('/addproduct',upload.single('image'), async(req,res)=>{
+    console.log(req.body)
+    const {  name, price, desc, category, city } = req.body
 
-    Product.findOne({ $and: [{ name: name }, { restaurant: restaurant }] }, (err, product) => {
+    Product.findOne({ $and: [{ name: name }, { restaurant: city }] }, (err, product) => {
         if (product) {
             res.send({ message: "Iteam Already Exists in this Restaurant" })
         } else {
             const product = new Product({
-                image: image,
+                image:req.file.filename,
                 name: name,
-                price: price,
+                price: parseFloat(price).toFixed(2),
                 desc: desc,
                 category: category,
-                restaurant: restaurant
+                restaurant: city
             })
             product.save(err => {
                 if (err) {
@@ -531,7 +515,7 @@ router.post('/updatecategory',async(req,res)=>{
 router.post('/updaterestaurant',async(req,res)=>{
 
 })
-router.post('/updateproduct',async(req,res)=>{
+router.post('/updateproduct',upload.single('image'), async(req,res)=>{
 
 })
 
