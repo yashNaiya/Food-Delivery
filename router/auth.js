@@ -13,17 +13,17 @@ const cookieParser = require('cookie-parser')
 router.use(cookieParser())
 
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) { 
-        cb(null, './Uploads/images');    
-     }, 
-     filename: function (req, file, cb) { 
-        cb(null , Date.now()+'_'+file.originalname);   
-     }
+    destination: function (req, file, cb) {
+        cb(null, './Uploads/images');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '_' + file.originalname);
+    }
 })
 var upload = multer({ storage: storage })
 
-const path = require("path");  
-router.use("/images", express.static(path.join("Uploads/images"))); 
+const path = require("path");
+router.use("/images", express.static(path.join("Uploads/images")));
 
 router.post("/edit", async (req, res) => {
     try {
@@ -144,7 +144,7 @@ router.post('/getproduct', async (req, res) => {
     }
 })
 
-router.post('/getusername',async(req,res)=>{
+router.post('/getusername', async (req, res) => {
     // console.log(req.body)
     try {
         const user = await User.findOne({ _id: req.body.userId })
@@ -354,11 +354,11 @@ router.post('/placeorder', async (req, res) => {
 
 // get order history
 
-router.post('/adminorderhistory', async (req,res)=>{
-    const pastOrders = await  Order.aggregate(
+router.post('/adminorderhistory', async (req, res) => {
+    const pastOrders = await Order.aggregate(
         [{ $match: { state: true } }]
     )
-    const liveOrders = await  Order.aggregate(
+    const liveOrders = await Order.aggregate(
         [{ $match: { state: false } }]
     )
 
@@ -384,9 +384,9 @@ router.post('/orderhistory', async (req, res) => {
         console.log("not found")
     }
 })
-router.post('/changestate', async(req,res)=>{
+router.post('/changestate', async (req, res) => {
     console.log(req.body._id)
-    const updated = await Order.updateOne({_id:req.body._id},{$set:{'state':true}})
+    const updated = await Order.updateOne({ _id: req.body._id }, { $set: { 'state': true } })
     if (updated === null) {
         res.status(404).send()
     }
@@ -399,65 +399,65 @@ router.post('/changestate', async(req,res)=>{
 
 //admin item page
 
-router.post('/addcategory',async(req,res)=>{
-    const {name} = req.body
+router.post('/addcategory', async (req, res) => {
+    const { name } = req.body
 
-    Category.findOne({name:name},(err,category)=>{
-        if(category){
-            res.send({message:"category already exists"})
+    Category.findOne({ name: name }, (err, category) => {
+        if (category) {
+            res.send({ message: "category already exists" })
         }
-        else{
+        else {
             const category = new Category({
-                name:name
+                name: name
             })
 
-            category.save(err=>{
-                if(err){
+            category.save(err => {
+                if (err) {
                     res.send(err)
                 }
-                else{
-                    res.send({message:"category added"})
+                else {
+                    res.send({ message: "category added" })
                 }
             })
         }
     })
 
 })
-router.post('/addrestaurant',async(req,res)=>{
+router.post('/addrestaurant', async (req, res) => {
 
-    const {name} = req.body
+    const { name } = req.body
 
-    Restaurant.findOne({name:name},(err,rest)=>{
-        if(rest){
-            res.send({message:"restaurant already exists"})
+    Restaurant.findOne({ name: name }, (err, rest) => {
+        if (rest) {
+            res.send({ message: "restaurant already exists" })
         }
-        else{
+        else {
             const restaurant = new Restaurant({
-                name:name
+                name: name
             })
 
-            restaurant.save(err=>{
-                if(err){
+            restaurant.save(err => {
+                if (err) {
                     res.send(err)
                 }
-                else{
-                    res.send({message:"restaurant added"})
+                else {
+                    res.send({ message: "restaurant added" })
                 }
             })
         }
     })
-    
+
 })
-router.post('/addproduct',upload.single('image'), async(req,res)=>{
+router.post('/addproduct', upload.single('image'), async (req, res) => {
     console.log(req.body)
-    const {  name, price, desc, category, city } = req.body
+    const { name, price, desc, category, city } = req.body
 
     Product.findOne({ $and: [{ name: name }, { restaurant: city }] }, (err, product) => {
         if (product) {
             res.send({ message: "Iteam Already Exists in this Restaurant" })
         } else {
             const product = new Product({
-                image:req.file.filename,
+                image: req.file.filename,
                 name: name,
                 price: parseFloat(price).toFixed(2),
                 desc: desc,
@@ -470,15 +470,16 @@ router.post('/addproduct',upload.single('image'), async(req,res)=>{
                 }
                 else {
                     res.send({ message: "Successfully Added" })
-                }})
-            }
-        })
+                }
+            })
+        }
+    })
 })
 
 
 
 
-router.post('/readcategory',async(req,res)=>{
+router.post('/readcategory', async (req, res) => {
     try {
         const items = await Category.find()
         res.send(items)
@@ -487,21 +488,21 @@ router.post('/readcategory',async(req,res)=>{
     }
 
 })
-router.post('/readrestaurant',async(req,res)=>{
+router.post('/readrestaurant', async (req, res) => {
     try {
         const items = await Restaurant.find()
         res.send(items)
     } catch (err) {
         res.send(err)
     }
-    
+
 })
-router.post('/readproduct',async(req,res)=>{
-    const {category, city} = req.body
-    const products = await  Product.aggregate(
-        [{ $match: {$and:[{category: category},{restaurant:city}]} }]
+router.post('/readproduct', async (req, res) => {
+    const { category, city } = req.body
+    const products = await Product.aggregate(
+        [{ $match: { $and: [{ category: category }, { restaurant: city }] } }]
     )
-    if(products){
+    if (products) {
         res.send(products)
     }
 })
@@ -509,27 +510,87 @@ router.post('/readproduct',async(req,res)=>{
 
 
 
-router.post('/updatecategory',async(req,res)=>{
+router.post('/updatecategory', async (req, res) => {
+    const updated = await Category.updateOne({ name: req.body.category }, { $set: { name: req.body.editCategory } })
+    if (updated) {
+        res.send({ message: "category updated" })
+    } else {
+        res.send()
+    }
+})
+router.post('/updaterestaurant', async (req, res) => {
+    const updated = await Restaurant.updateOne({ name: req.body.city }, { $set: { name: req.body.editCity } })
+    if (updated) {
+        res.send({ message: "restaurant updated" })
+    } else {
+        res.send()
+    }
 
 })
-router.post('/updaterestaurant',async(req,res)=>{
+router.post('/updateproduct', upload.single('image'), async (req, res) => {
+    const { name, price, desc, category, city } = req.body
+    const updated = await Product.updateOne({ _id: req.body.ID }, {
+        $set: {
+            image: req.file.filename, name: name, price: parseFloat(price).toFixed(2)
+            , desc: desc, restaurant: city, category: category
+        }
+    })
+    if (updated) {
+        res.send({ message: "product updated" })
+    } else {
+        res.send()
+    }
 
 })
-router.post('/updateproduct',upload.single('image'), async(req,res)=>{
+
+router.post('/updateproduct2', async (req, res) => {
+    try {
+        const name = req.body.name.toString()
+        const price = req.body.price.toString()
+        const desc = req.body.desc.toString()
+        const category = req.body.category.toString()
+        const city = req.body.restaurant.toString()
+        const updated = await Product.updateOne({ _id: req.body._id }, { $set: { name: name, price: parseFloat(price).toFixed(2), desc: desc, restaurant: city, category: category } })
+        if (updated) {
+            res.send({ message: "product updated" })
+        } else {
+            res.send()
+        }
+    } catch (err) { console.log(err) }
 
 })
 
 
 
 
-router.post('/deletecategory',async(req,res)=>{
+router.post('/deletecategory', async (req, res) => {
+    const deleted =await Category.deleteOne({name:req.body.category})
+    if(deleted){
+        res.send({message:"category deleted"})
+        console.log(deleted)
+    }else{
+        res.send()
+    }
 
 })
-router.post('/deleterestaurant',async(req,res)=>{
+router.post('/deleterestaurant', async (req, res) => {
+    const deleted =await Restaurant.deleteOne({name:req.body.city})
+    if(deleted){
+        res.send({message:"restaurant deleted"})
+        console.log(deleted)
+    }else{
+        res.send()
+    }
 
 })
-router.post('/deleteproduct',async(req,res)=>{
-
+router.post('/deleteproduct', async (req, res) => {
+    const deleted =await Product.deleteOne({_id:req.body._id})
+    if(deleted){
+        res.send({message:"product deleted"})
+        console.log(deleted)
+    }else{
+        res.send()
+    }
 })
 
 module.exports = router
