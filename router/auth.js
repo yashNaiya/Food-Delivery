@@ -10,6 +10,7 @@ const Authenticate = require("../Middleware/Authenticate")
 const router = express.Router()
 const multer = require('multer')
 const cookieParser = require('cookie-parser')
+const nodemailer = require("nodemailer");
 router.use(cookieParser())
 
 const storage = multer.diskStorage({
@@ -23,6 +24,15 @@ const storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 
 const path = require("path");
+
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: 'pmsdummy16',
+        pass: 'ztkgnmcwiaxsukml'
+    }
+})
 router.use("/images", express.static(path.join("Uploads/images")));
 
 router.post("/edit", async (req, res) => {
@@ -591,6 +601,29 @@ router.post('/deleteproduct', async (req, res) => {
     }else{
         res.send()
     }
+})
+
+
+router.post('/sendmail', (req, res) => {
+    const { message,from } = req.body
+
+    const mailOptions = {
+        from: from,
+        to: "pmsdummy16@getMaxListeners.com",
+        subject: "Email from site surfer",
+        text: message
+    }
+
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log("error", error);
+            res.status(401).json({ status: 401, message: "email not send" })
+        } else {
+            console.log("Email sent", info.response);
+            res.status(201).json({ status: 201, message: "Email sent Succsfully" })
+        }
+    })
 })
 
 module.exports = router
