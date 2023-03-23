@@ -10,7 +10,6 @@ const Authenticate = require("../Middleware/Authenticate")
 const router = express.Router()
 const multer = require('multer')
 const cookieParser = require('cookie-parser')
-const nodemailer = require("nodemailer");
 router.use(cookieParser())
 
 const storage = multer.diskStorage({
@@ -24,15 +23,8 @@ const storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 
 const path = require("path");
+const Messages = require('../Models/Message')
 
-
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: 'pmsdummy16',
-        pass: 'ztkgnmcwiaxsukml'
-    }
-})
 router.use("/images", express.static(path.join("Uploads/images")));
 
 router.post("/edit", async (req, res) => {
@@ -574,56 +566,66 @@ router.post('/updateproduct2', async (req, res) => {
 
 
 router.post('/deletecategory', async (req, res) => {
-    const deleted =await Category.deleteOne({name:req.body.category})
-    if(deleted){
-        res.send({message:"category deleted"})
+    const deleted = await Category.deleteOne({ name: req.body.category })
+    if (deleted) {
+        res.send({ message: "category deleted" })
         console.log(deleted)
-    }else{
+    } else {
         res.send()
     }
 
 })
 router.post('/deleterestaurant', async (req, res) => {
-    const deleted =await Restaurant.deleteOne({name:req.body.city})
-    if(deleted){
-        res.send({message:"restaurant deleted"})
+    const deleted = await Restaurant.deleteOne({ name: req.body.city })
+    if (deleted) {
+        res.send({ message: "restaurant deleted" })
         console.log(deleted)
-    }else{
+    } else {
         res.send()
     }
 
 })
 router.post('/deleteproduct', async (req, res) => {
-    const deleted =await Product.deleteOne({_id:req.body._id})
-    if(deleted){
-        res.send({message:"product deleted"})
+    const deleted = await Product.deleteOne({ _id: req.body._id })
+    if (deleted) {
+        res.send({ message: "product deleted" })
         console.log(deleted)
-    }else{
+    } else {
         res.send()
     }
 })
 
 
-router.post('/sendmail', (req, res) => {
-    const { message,from } = req.body
+router.post('/submitform', async (req, res) => {
+    const { data, from } = req.body
 
-    const mailOptions = {
-        from: from,
-        to: "pmsdummy16@getMaxListeners.com",
-        subject: "Email from site surfer",
-        text: message
-    }
+    const message = new Messages({
+        name: data.name,
+        email: from,
+        subject: data.subject,
+        message: data.message
+    })
 
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log("error", error);
-            res.status(401).json({ status: 401, message: "email not send" })
+    message.save(async (err) => {
+        if (err) {
+            res.send(err)
         } else {
-            console.log("Email sent", info.response);
-            res.status(201).json({ status: 201, message: "Email sent Succsfully" })
+            res.send({message:"your message has been recived, you will here from us shortly"})
+
         }
     })
+})
+
+router.get("/readmessages",async(req,res)=>{
+    const data = await Messages.find()
+
+    res.send(data)
+})
+
+router.post('/deletemessage',async(req,res)=>{
+    // console.log(req.body)
+    const deleteMessage = await Messages.findByIdAndDelete({_id:req.body._id})
+    res.send()
 })
 
 module.exports = router
