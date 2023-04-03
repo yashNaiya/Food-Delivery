@@ -15,7 +15,27 @@ const product = new mongoose.Schema({
         type: Number,
         required: true,
     },
-
+    size:{
+        small:{
+            price:{type:String}
+        },
+        medium:{
+            price:{type:String}
+        },
+        large:{
+            price:{type:String}
+        },
+    },
+    toppings:[
+        {
+            name:{
+                type:String
+            },
+            price:{
+                type:String
+            }
+        }
+    ],
     desc: {
         type: String,
         required: true

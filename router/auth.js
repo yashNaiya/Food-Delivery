@@ -199,7 +199,7 @@ router.post('/gettotal', async (req, res) => {
 
 
 router.post('/addtocart', async (req, res) => {
-    console.log(req.body.name)
+    // console.log(req.body.name)
     let total = 0;
     let gst = 0;
     if (!(req.body.count === 0)) {
@@ -259,7 +259,7 @@ router.post('/addtocart', async (req, res) => {
     }
     else {
 
-        console.log("item is removed")
+        // console.log("item is removed")
         const garbage2 = await User.findOneAndUpdate(
             { _id: req.body.userId },
             { $pull: { "incart": { "productId": req.body.productId } } }
@@ -451,8 +451,10 @@ router.post('/addrestaurant', async (req, res) => {
 
 })
 router.post('/addproduct', upload.single('image'), async (req, res) => {
-    console.log(req.body)
+ 
+    // console.log(req.body.getAll('toppings[]'))
     const { name, price, desc, category, city } = req.body
+
 
     Product.findOne({ $and: [{ name: name }, { restaurant: city }] }, (err, product) => {
         if (product) {
@@ -471,14 +473,20 @@ router.post('/addproduct', upload.single('image'), async (req, res) => {
                     res.send(err)
                 }
                 else {
-                    res.send({ message: "Successfully Added" })
+                    res.send(product)
                 }
             })
         }
     })
 })
 
+router.post('/addproduct2',async(req,res)=>{
 
+    const updateprodct = await Product.findOneAndUpdate({_id:req.body.product._id},{$set:{toppings:req.body.toppingList,size:req.body.sizeprice}})
+
+    res.send({message:"Prduct Added Succesfully"})
+
+})
 
 
 router.post('/readcategory', async (req, res) => {
@@ -501,11 +509,26 @@ router.post('/readrestaurant', async (req, res) => {
 })
 router.post('/readproduct', async (req, res) => {
     const { category, city } = req.body
-    const products = await Product.aggregate(
-        [{ $match: { $and: [{ category: category }, { restaurant: city }] } }]
-    )
-    if (products) {
-        res.send(products)
+
+    if(category==='category' && city==='restaurant'){
+        const products = await Product.find()
+     console.log(products);   res.send(products)
+    }
+    else if(category==='category' && !(city==='restaurant')){
+        const products = await Product.find({restaurant:city})
+     console.log(products);   res.send(products)
+    }
+    else if(!(category==='category') && city==='restaurant'){
+        const products = await Product.find({category:category})
+     console.log(products);   res.send(products)
+    }
+    else{
+        const products = await Product.aggregate(
+            [{ $match: { $and: [{ category: category }, { restaurant: city }] } }]
+        )
+        if (products) {
+         console.log(products);   res.send(products)
+        }
     }
 })
 
