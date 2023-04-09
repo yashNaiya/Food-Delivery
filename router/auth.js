@@ -24,6 +24,7 @@ var upload = multer({ storage: storage })
 
 const path = require("path");
 const Messages = require('../Models/Message')
+const Offers = require('../Models/Offers')
 
 router.use("/images", express.static(path.join("Uploads/images")));
 
@@ -199,7 +200,7 @@ router.post('/gettotal', async (req, res) => {
 
 
 router.post('/addtocart', async (req, res) => {
-    // console.log(req.body.name)
+    console.log(req.body)
     let total = 0;
     let gst = 0;
     if (!(req.body.count === 0)) {
@@ -649,6 +650,12 @@ router.post('/deletemessage',async(req,res)=>{
     // console.log(req.body)
     const deleteMessage = await Messages.findByIdAndDelete({_id:req.body._id})
     res.send()
+})
+
+router.get('/offers',async(req,res)=>{
+    const data = await Offers.find()
+    console.log(data)
+    res.send(data)
 })
 
 module.exports = router
