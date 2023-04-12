@@ -41,15 +41,12 @@ const Infouser = new mongoose.Schema({
             },
             name:{
                 type:String,
-                required:true
             },
             count: {
                 type: Number,
-                required: true
             },
             total: {
                 type:Number,
-                required: true
             }
         }
     ]
