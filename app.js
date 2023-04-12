@@ -6,7 +6,7 @@ require("./Connection/connection")
 const dotenv = require('dotenv')
 const PORT = process.env.PORT || 9002
 dotenv.config({ path: "././config.env" })
-
+//hello from kashyap
 var cors = require('cors')
 const origin = ["https://strong-pavlova-dad727.netlify.app", "http://localhost:3000"]
 app.use(cors({
