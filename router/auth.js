@@ -208,7 +208,8 @@ router.post('/addtocart', async (req, res) => {
             productId: req.body.productId,
             name: req.body.name,
             count: req.body.count,
-            total: req.body.price * req.body.count
+            total: req.body.price * req.body.count,
+            size:req.body.size,
         }
         console.log("we are in working..")
         const itemOrNot = await User.findOne({ _id: req.body.userId, incart: { $elemMatch: { productId: item.productId } } })
@@ -235,7 +236,9 @@ router.post('/addtocart', async (req, res) => {
                 {
                     $set: {
                         "incart.$.count": item.count,
-                        "incart.$.total": item.total
+                        "incart.$.total": item.total,
+                        "incart.$.size":req.body.size,
+                        "incart.$.extra":req.body.toppings
                     }
                 }
             )

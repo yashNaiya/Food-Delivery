@@ -47,7 +47,15 @@ const Infouser = new mongoose.Schema({
             },
             total: {
                 type:Number,
-            }
+            },
+            size:{
+                type:String,
+            },
+            extra:[
+                {
+                    type: mongoose.Schema.Types.Mixed
+                }
+            ]
         }
     ]
 
