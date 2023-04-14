@@ -200,7 +200,7 @@ router.post('/gettotal', async (req, res) => {
 
 
 router.post('/addtocart', async (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     let total = 0;
     let gst = 0;
     if (!(req.body.count === 0)) {
@@ -210,10 +210,11 @@ router.post('/addtocart', async (req, res) => {
             count: req.body.count,
             total: req.body.price * req.body.count,
             size:req.body.size,
+            extra:req.body.extra
         }
-        console.log("we are in working..")
         const itemOrNot = await User.findOne({ _id: req.body.userId, incart: { $elemMatch: { productId: item.productId } } })
         if (itemOrNot === null) {
+            console.log("Added")
 
             const addedItemIncart = await User.findOneAndUpdate({ _id: req.body.userId }, { $push: { incart: item } })
             if (!addedItemIncart) {
@@ -224,6 +225,7 @@ router.post('/addtocart', async (req, res) => {
                 orderArray.incart.forEach(arrayItem => {
                     total = total + arrayItem.total
                 })
+
                 gst = (total * 5) / 100
                 // console.log("total ", total)
                 // console.log("gst ", gst)
@@ -231,17 +233,32 @@ router.post('/addtocart', async (req, res) => {
             }
         }
         else {
-            const updatedItem = await User.findOneAndUpdate(
-                { _id: req.body.userId, "incart.productId": item.productId },
-                {
-                    $set: {
-                        "incart.$.count": item.count,
-                        "incart.$.total": item.total,
-                        "incart.$.size":req.body.size,
-                        "incart.$.extra":req.body.toppings
+            console.log("Updated")
+            let updatedItem={}
+            if(req.body.page==='home'){
+                updatedItem = await User.findOneAndUpdate(
+                    { _id: req.body.userId, "incart.productId": item.productId },
+                    {
+                        $set: {
+                            "incart.$.count": item.count,
+                            "incart.$.total": item.total,
+                        }
                     }
-                }
-            )
+                )
+            }else{
+                updatedItem = await User.findOneAndUpdate(
+                    { _id: req.body.userId, "incart.productId": item.productId },
+                    {
+                        $set: {
+                            "incart.$.count": item.count,
+                            "incart.$.total": item.total,
+                            "incart.$.size":req.body.size,
+                            "incart.$.extra":req.body.toppings
+                        }
+                    }
+                )
+            }
+
             if (!updatedItem) {
                 res.status(404).send()
             } else {

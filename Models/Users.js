@@ -49,7 +49,7 @@ const Infouser = new mongoose.Schema({
                 type:Number,
             },
             size:{
-                type:String,
+                type: mongoose.Schema.Types.Mixed,
             },
             extra:[
                 {
