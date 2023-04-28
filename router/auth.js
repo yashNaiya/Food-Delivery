@@ -192,8 +192,8 @@ router.post('/gettotal', async (req, res) => {
         total = total + arrayItem.total
     })
     gst = (total * 5) / 100
-    // console.log("total ", total)
-    // console.log("gst ", gst)
+    console.log("Total ", total)
+    console.log("Gst ", gst)
     res.status(200).send({ total, gst })
 
 })
@@ -227,8 +227,8 @@ router.post('/addtocart', async (req, res) => {
                 })
 
                 gst = (total * 5) / 100
-                // console.log("total ", total)
-                // console.log("gst ", gst)
+                console.log("total ", total)
+                console.log("gst ", gst)
                 res.status(200).send({ total, gst })
             }
         }
