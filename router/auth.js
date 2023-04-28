@@ -30,7 +30,7 @@ router.use("/images", express.static(path.join("Uploads/images")));
 
 router.get('/landing',(req,res)=>{
     console.log("on Landing Page")
-    res.send()
+    res.send("on Landing Page")
 })
 
 router.post("/edit", async (req, res) => {
@@ -134,6 +134,7 @@ router.post("/register", (req, res) => {
 })
 
 router.get("/login", (req, res) => {
+    console.log('hii login get method')
     res.send("hii login get method")
 })
 router.get("/home", Authenticate, async (req, res) => {

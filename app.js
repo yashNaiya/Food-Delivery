@@ -10,7 +10,6 @@ dotenv.config({ path: "././config.env" })
 var cors = require('cors')
 const origin = ["https://yashrestaurant.netlify.app", "http://localhost:3000"]
 app.use(cors({
-    
     credentials: true,
     origin: origin,
     methods: ["GET", "POST"],
