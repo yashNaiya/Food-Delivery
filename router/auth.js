@@ -28,6 +28,11 @@ const Offers = require('../Models/Offers')
 
 router.use("/images", express.static(path.join("Uploads/images")));
 
+router.get('/landing',(req,res)=>{
+    console.log("on Landing Page")
+    res.send()
+})
+
 router.post("/edit", async (req, res) => {
     try {
         const _id = req.body._id
