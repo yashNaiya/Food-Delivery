@@ -72,29 +72,34 @@ router.post("/login", (req, res) => {
 
     const { email, password } = req.body
     //  console.log(req.body)
-    User.findOne({ email: email, state: true }, async (err, user) => {
-        if (user) {
-            const isMatch = await bcrypt.compare(password[0], user.password)
-            if (isMatch) {
+    try{
 
-                token = await user.generateAuthToken();
-                res.cookie("jwtoken", token, {
-                    expires: new Date(Date.now() + 1200000),
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none'
-                }).send()
-            }
-            else {
-                //  console.log("Password Did Not Match")
-
+        User.findOne({ email: email, state: true }, async (err, user) => {
+            if (user) {
+                const isMatch = await bcrypt.compare(password[0], user.password)
+                if (isMatch) {
+    
+                    token = await user.generateAuthToken();
+                    res.cookie("jwtoken", token, {
+                        expires: new Date(Date.now() + 1200000),
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: 'none'
+                    }).send()
+                }
+                else {
+                     console.log("Password Did Not Match")
+    
+                    res.send({ message: "Incorrect Credienteals" })
+                }
+            } else {
+                   console.log("User Not Registered")
                 res.send({ message: "Incorrect Credienteals" })
             }
-        } else {
-            //    console.log("User Not Registered")
-            res.send({ message: "Incorrect Credienteals" })
-        }
-    })
+        })
+    }catch(e){
+        console.log(e.message)
+    }
 })
 
 router.post("/register", (req, res) => {
