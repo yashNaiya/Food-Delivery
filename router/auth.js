@@ -512,6 +512,10 @@ router.post('/addproduct', upload.single('image'), async (req, res) => {
     })
 })
 
+router.get('/',(req,res)=>{
+    res.send("It is running...")
+})
+
 router.post('/addproduct2',async(req,res)=>{
 
     const updateprodct = await Product.findOneAndUpdate({_id:req.body.product._id},{$set:{toppings:req.body.toppingList,size:req.body.sizeprice}})
